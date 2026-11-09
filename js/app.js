@@ -51,11 +51,20 @@
       t = setTimeout(function () { fn.apply(ctx, args); }, wait || 150);
     };
   }
-  function toast(msg, withUndo) {
+  function toast(msg, withUndo, tone) {
     var el = $("#toast");
     if (!el) return;
+    el.setAttribute("data-tone", tone || "success");
     el.innerHTML = "";
-    el.appendChild(document.createTextNode(msg));
+    var icon = document.createElement("span");
+    icon.className = "toast-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = tone === "warning" ? "!" : tone === "info" ? "i" : "✓";
+    el.appendChild(icon);
+    var message = document.createElement("span");
+    message.className = "toast-message";
+    message.textContent = msg;
+    el.appendChild(message);
     if (withUndo) {
       var b = document.createElement("button");
       b.type = "button";
@@ -622,7 +631,7 @@
         var size = act ? act.getAttribute("data-size") : "P";
         var prod = productById(id);
         if (store.add(id, size)) {
-          toast(prod && store.isPizza(id) ? ("Adicionado: " + prod.name + " (" + size + ").") : "Adicionado ao pedido.");
+          toast(prod ? prod.name + (store.isPizza(id) ? " (" + size + ")" : "") + " no seu pedido!" : "Adicionado ao seu pedido!");
         }
         renderCart();
         return;
@@ -700,7 +709,7 @@
       }
       if (t.closest && t.closest("#btnReorder")) {
         if (store.reorderLast()) { renderCart(); openCart(); toast("Último pedido recuperado."); }
-        else toast("Nenhum pedido anterior encontrado.");
+        else toast("Você ainda não tem um pedido anterior.", false, "info");
         return;
       }
     });
