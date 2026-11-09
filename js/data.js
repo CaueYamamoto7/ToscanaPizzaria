@@ -63,8 +63,8 @@ TOSCANA.sizes = [
 
 /* Preços das pizzas por CATEGORIA (kind) e tamanho. */
 TOSCANA.pizzaPrices = {
-  tradicional: { P: 59.00, M: 69.00, G: 75.00 },
-  especial:    { P: 69.00, M: 79.00, G: 89.00 },
+  tradicional: { P: 59.00, M: 75.00, G: 85.00 },
+  especial:    { P: 75.00, M: 85.00, G: 95.00 },
   doce:        { P: 69.00, M: 79.00, G: 89.00 }
 };
 
