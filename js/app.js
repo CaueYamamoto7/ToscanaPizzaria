@@ -348,7 +348,7 @@
       box.innerHTML =
         '<div class="cart-empty"><div class="cart-empty-icon">' + I.bag + '</div>' +
         "<h4>Seu pedido começa aqui</h4><p>Escolha suas favoritas no cardápio.<br>A gente cuida do resto.</p>" +
-        '<a class="btn btn--wine" href="/index.html#cardapio" data-close-cart>Ver cardápio</a></div>';
+        '<a class="btn btn--wine" href="/#cardapio" data-close-cart>Ver cardápio</a></div>';
     } else {
       box.innerHTML = items.map(function (it, idx) {
         var p = store.find(it.id);
@@ -443,6 +443,17 @@
     refreshResume();
     var changeWrap = $("#fChangeWrap");
     if (changeWrap) changeWrap.style.display = fieldValue("fPayment") === "Dinheiro" ? "" : "none";
+    var scroll = $(".checkout-scroll");
+    if (scroll) scroll.scrollTop = 0;
+    var summary = $(".checkout-summary");
+    if (summary) summary.open = false;
+    $("#checkoutModal").onkeydown = function (ev) {
+      if (ev.key !== "Tab") return;
+      var controls = $all('button:not(:disabled), input, select, summary', this).filter(function (el) { return el.getClientRects().length > 0; });
+      var first = controls[0], last = controls[controls.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    };
     $("#checkoutModal").classList.add("is-open");
     $("#cartScrim").classList.add("is-visible");
     lockScroll();
@@ -452,14 +463,14 @@
 
   function refreshResume() {
     var lines = store.items().map(function (it) {
-      var extra = it.notes ? " (" + it.notes + ")" : "";
-      return it.qty + "x " + store.lineLabel(it) + extra + " — " + store.money(store.unitPrice(it) * it.qty);
+      return '<div class="checkout-resume-item"><span>' + it.qty + '× ' + esc(store.lineLabel(it)) +
+        (it.notes ? '<small>' + esc(it.notes) + '</small>' : '') + '</span><strong>' + store.money(store.unitPrice(it) * it.qty) + '</strong></div>';
     });
     var sub = store.subtotal();
-    var txt = lines.join("\n") + "\n\nTotal dos produtos: " + store.money(sub) +
-      "\nTaxa de entrega a combinar pelo WhatsApp.";
     var r = $("#orderResume");
-    if (r) r.textContent = txt;
+    if (r) r.innerHTML = lines.join("");
+    var count = $("#checkoutCount");
+    if (count) count.textContent = "(" + store.count() + (store.count() === 1 ? " item)" : " itens)");
     var t = $("#checkoutTotal");
     if (t) t.textContent = store.money(sub);
   }
@@ -502,6 +513,7 @@
 
   function submitCheckout(ev) {
     ev.preventDefault();
+    if (!store.items().length) { closeCheckout(); openCart(); return; }
     var ok = true;
     ok = requireField("fName") && ok;
     ok = requireField("fPhone", function (v) { return v.replace(/\D/g, "").length >= 10; }) && ok;
@@ -511,10 +523,7 @@
     if (pay === "Dinheiro") {
       // troco opcional, mas se preenchido precisa ser válido
       var ch = fieldValue("fChange");
-      if (ch && !/^(\d+([.,]\d{1,2})?)$/.test(ch.replace("R$", "").trim())) {
-        toast("Confira o troco. Use, por exemplo, 100 ou 50,00.", false, "warning");
-        return;
-      }
+      ok = requireField("fChange", function () { return !ch || /^(\d+([.,]\d{1,2})?)$/.test(ch.replace("R$", "").trim()); }) && ok;
     }
     if (!ok) {
       toast("Complete seus dados de contato, entrega e pagamento.", false, "warning");
@@ -543,7 +552,6 @@
 
   function showSuccess(customer) {
     closeCheckout();
-    store.clear();
     renderCart();
     renderReorderBtn();
     var m = $("#successModal");
@@ -682,6 +690,7 @@
         return;
       }
 
+      if (t.closest && t.closest("[data-back-cart]")) { closeCheckout(); openCart(); return; }
       if (t.closest && t.closest("[data-open-cart]")) { openCart(); return; }
       if (t.closest && t.closest("[data-close-cart]")) { closeCart(); return; }
       if (t.closest && t.closest("[data-open-checkout]")) { openCheckout(); return; }

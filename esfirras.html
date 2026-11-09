@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500;1,9..144,650&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css?v=1.5.0">
+<link rel="stylesheet" href="/css/style.css?v=1.5.2">
 <meta name="theme-color" content="#3d060e">
 <link rel="manifest" href="/manifest.json">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FoodEstablishment","name":"Pizzaria Toscana"}</script>
@@ -131,18 +131,36 @@
   </div>
 </aside>
 
-<div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-label="Finalizar pedido">
-  <div class="modal-card">
-    <div class="modal-head checkout-head"><div><span class="checkout-eyebrow">Falta pouco para saborear</span><h3 id="checkoutTitle">Finalize seu pedido</h3><p>Seus dados para combinar a entrega.</p></div><button class="icon-btn" type="button" data-close-checkout aria-label="Fechar finalização"><svg><use href="#i-x"/></svg></button></div>
-    <form class="modal-body" id="checkoutForm" novalidate>
-      <section class="checkout-summary" aria-label="Resumo do pedido"><h4>Seu pedido</h4><div class="order-resume" id="orderResume"></div></section><div class="checkout-section-title">Contato e entrega</div>
-      <div class="field"><label for="fName">Nome <i>*</i></label><input id="fName" name="name" autocomplete="name" autocapitalize="words" enterkeyhint="next" aria-describedby="fName-err" placeholder="Seu nome"><span class="field-error" id="fName-err">Informe seu nome.</span></div>
-      <div class="field"><label for="fPhone">Telefone / WhatsApp <i>*</i></label><input id="fPhone" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" aria-describedby="fPhone-err" placeholder="(43) 99999-9999"><span class="field-error" id="fPhone-err">Informe um telefone valido com DDD.</span></div>
-      <div class="field"><label for="fAddress">Rua e número <i>*</i></label><input id="fAddress" name="address" autocomplete="street-address" enterkeyhint="next" aria-describedby="fAddress-err" placeholder="Rua, número"><span class="field-error" id="fAddress-err">Informe rua e número.</span></div>
-      <div class="field-2col"><div class="field"><label for="fPayment">Pagamento <i>*</i></label><select id="fPayment"><option value="">Selecione...</option><option>Pix</option><option>Cartão na entrega</option><option>Dinheiro</option></select><span class="field-error" id="fPayment-err">Selecione a forma de pagamento.</span></div><div class="field" id="fChangeWrap"><label for="fChange">Troco para (se dinheiro)</label><input id="fChange" inputmode="decimal" placeholder="Ex: 100"></div></div>
-      <div class="field"><label for="fNotes">Complemento / observações</label><input id="fNotes" name="notes" autocomplete="off" enterkeyhint="done" placeholder="Apto, ponto de referência..."></div>
-      <div class="modal-foot checkout-foot"><div class="checkout-subtotal"><span>Total dos produtos</span><strong id="checkoutTotal">R$ 0,00</strong></div><p class="checkout-delivery-note">A taxa de entrega será combinada pelo WhatsApp e somada ao valor dos produtos.</p><button type="submit" class="btn btn--green btn--block"><svg><use href="#i-chat"/></svg>Enviar pedido no WhatsApp</button>
-      <button type="button" class="btn btn--ghost btn--block" data-close-checkout>Voltar ao pedido</button></div>
+<div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+  <div class="modal-card checkout-card">
+    <header class="checkout-head">
+      <div><span class="checkout-eyebrow">Entrega e pagamento</span><h3 id="checkoutTitle">Como vamos entregar?</h3><p>Preencha os dados e confirme pelo WhatsApp.</p></div>
+      <button class="checkout-close" type="button" data-close-checkout aria-label="Fechar">&#215;</button>
+    </header>
+    <form id="checkoutForm" novalidate>
+      <div class="checkout-scroll">
+        <details class="checkout-summary"><summary><span>Conferir meu pedido <span id="checkoutCount"></span></span><span aria-hidden="true">&#8964;</span></summary><div id="orderResume"></div><button class="checkout-edit" type="button" data-back-cart>Editar itens no carrinho</button></details>
+        <fieldset class="checkout-group"><legend><span>1</span> Seus dados</legend>
+          <div class="checkout-contact">
+            <div class="field"><label for="fName">Seu nome</label><input id="fName" name="name" autocomplete="name" autocapitalize="words" enterkeyhint="next" aria-describedby="fName-err" placeholder="Como podemos te chamar?" required><span class="field-error" id="fName-err">Informe seu nome.</span></div>
+            <div class="field"><label for="fPhone">WhatsApp com DDD</label><input id="fPhone" name="phone" type="tel" autocomplete="tel" enterkeyhint="next" aria-describedby="fPhone-err" placeholder="(43) 99999-9999" required><span class="field-error" id="fPhone-err">Informe um telefone com DDD.</span></div>
+          </div>
+        </fieldset>
+        <fieldset class="checkout-group"><legend><span>2</span> Onde entregar?</legend>
+          <div class="field"><label for="fAddress">Rua e n&#250;mero</label><input id="fAddress" name="address" autocomplete="street-address" enterkeyhint="next" aria-describedby="fAddress-err" placeholder="Ex.: Rua Brasil, 123" required><span class="field-error" id="fAddress-err">Informe a rua e o n&#250;mero.</span></div>
+          <div class="field"><label for="fNotes">Complemento ou observa&#231;&#227;o <span>Opcional</span></label><input id="fNotes" name="notes" autocomplete="address-line2" enterkeyhint="next" placeholder="Apartamento, refer&#234;ncia ou instru&#231;&#227;o"></div>
+          <p class="checkout-delivery-note">Taxa de entrega a combinar pelo WhatsApp.</p>
+        </fieldset>
+        <fieldset class="checkout-group"><legend><span>3</span> Como prefere pagar?</legend>
+          <div class="field"><label for="fPayment">Forma de pagamento</label><select id="fPayment" name="payment" aria-describedby="fPayment-err" required><option value="">Escolha uma forma de pagamento</option><option>Pix</option><option>Cart&#227;o na entrega</option><option>Dinheiro</option></select><span class="field-error" id="fPayment-err">Escolha a forma de pagamento.</span></div>
+          <div class="field" id="fChangeWrap" style="display:none"><label for="fChange">Troco para quanto? <span>Opcional</span></label><input id="fChange" name="changeFor" inputmode="decimal" placeholder="Ex.: 100,00" aria-describedby="fChange-err"><span class="field-error" id="fChange-err">Informe um valor v&#225;lido para o troco.</span><small>Deixe em branco se n&#227;o precisar de troco.</small></div>
+        </fieldset>
+      </div>
+      <footer class="checkout-foot">
+        <div class="checkout-subtotal"><div><span>Total dos produtos</span><small>Entrega a combinar</small></div><strong id="checkoutTotal">R$ 0,00</strong></div>
+        <button type="submit" class="btn btn--green btn--block"><svg><use href="#i-chat"/></svg>Continuar no WhatsApp<svg class="checkout-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+        <button type="button" class="checkout-back" data-back-cart>Voltar ao carrinho</button>
+      </footer>
     </form>
   </div>
 </div>
@@ -155,7 +173,7 @@
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js",{updateViaCache:"none"}).catch(function(){});});}</script>
 <script src="/js/data.js"></script>
 <script src="/js/store.js"></script>
-<script src="/js/app.js"></script>
+<script src="/js/app.js?v=1.5.2"></script>
 <nav class="bottom-nav" aria-label="Navegação no celular"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg><span>Início</span></a><a href="/pizzas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 9 3a26 26 0 0 1 12 12Z"/><path d="M8 6a23 23 0 0 1 10 10"/><circle cx="11" cy="11" r="1.2"/><circle cx="9" cy="16" r="1.2"/><circle cx="14" cy="15" r=".8"/></svg><span>Pizzas</span></a><a href="/esfirras" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="8"/><ellipse cx="12" cy="12" rx="6" ry="5"/><path d="m9 10 2 1m3-2 1 2m-6 3 2-1m2 2 2-1"/></svg><span>Esfirras</span></a><a href="/bebidas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v4l-3 4v9a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-9l-3-4V3M7 12h10M7 17h10"/></svg><span>Bebidas</span></a><button type="button" data-open-cart><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l1 12H4Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/><path d="m9 15 2 2 4-4"/></svg><span>Meu pedido</span><span class="bottom-nav-count" data-cart-count style="display:none">0</span></button></nav>
 </body>
 </html>
