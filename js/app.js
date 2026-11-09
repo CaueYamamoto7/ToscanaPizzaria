@@ -238,26 +238,56 @@
 
   /* ---------------- meia-a-meia ---------------- */
   var halfState = { baseId: null, size: "P" };
+  var halfTrigger = null;
+
+  function updateHalfTotal() {
+    var selected = $("#halfOptions input:checked");
+    var total = $("#halfTotal");
+    if (total) total.textContent = selected ? store.money(store.unitPrice({ id: halfState.baseId, size: halfState.size, halfId: selected.value })) : "Escolha o outro sabor";
+  }
 
   function openHalf(baseId, size) {
-    halfState.baseId = baseId;
-    halfState.size = size || "P";
     var modal = $("#halfModal");
     if (!modal) return;
     var base = store.find(baseId);
-    $("#halfTitle").textContent = base ? ("Meia-a-meia: " + base.name + " (" + halfState.size + ")") : "Montar meia-a-meia";
+    if (!base || base.paused || !store.isPizza(baseId)) return;
+    halfState.baseId = baseId;
+    halfState.size = (TOSCANA.sizes || []).some(function (s) { return s.code === size; }) ? size : "P";
+    halfTrigger = document.activeElement;
+    modal.setAttribute("aria-labelledby", "halfTitle");
+    modal.innerHTML = '<div class="modal-card half-card">' +
+      '<div class="modal-head half-head"><div><span class="half-eyebrow">Dois sabores, uma pizza</span><h3 id="halfTitle">Monte sua meia a meia</h3><p id="halfFee"></p></div>' +
+      '<button type="button" class="icon-btn" data-close-half aria-label="Fechar meia a meia">' + I.plus.replace('M12 5v14M5 12h14', 'M6 6l12 12M18 6L6 18') + '</button></div>' +
+      '<div class="modal-body half-body"><div class="half-base"><span class="half-eyebrow">Sua primeira metade · tamanho ' + esc(halfState.size) + '</span><h4>' + esc(base.name) + '</h4><p>' + esc(base.desc) + '</p></div>' +
+      '<fieldset class="half-flavors"><legend>Escolha a segunda metade</legend><div class="half-list" id="halfOptions"></div></fieldset>' +
+      '<div class="field half-notes"><label for="halfNotes">Alguma observação? <span>Opcional</span></label><input id="halfNotes" maxlength="80" placeholder="Ex.: sem cebola, bem assada"></div></div>' +
+      '<div class="half-footer"><div class="half-total"><span>Total da pizza</span><strong id="halfTotal" role="status"></strong></div>' +
+      '<button type="button" class="btn btn--wine btn--block" data-confirm-half>Adicionar ao pedido</button><button type="button" class="half-cancel" data-close-half>Continuar escolhendo</button></div></div>';
     var fee = Number((TOSCANA.config || {}).halfFee) || 0;
     $("#halfFee").textContent = fee ? ("Preço da maior metade + " + store.money(fee) + " de montagem") : "Vale o preço da metade mais cara";
     var opts = store.activeProducts(TOSCANA.pizzas).filter(function (p) { return p.id !== baseId; });
     $("#halfOptions").innerHTML = opts.map(function (p) {
-      var price = store.basePrice(p, halfState.size);
-      return '<label class="half-opt"><input type="radio" name="half" value="' + esc(p.id) + '"><span><strong>' + esc(p.name) + "</strong><small>" + esc(p.desc) + " — " + store.money(price) + "</small></span></label>";
+      return '<label class="half-opt"><input type="radio" name="half" value="' + esc(p.id) + '"><span class="half-opt-content"><strong>' + esc(p.name) + '</strong><small class="half-description">' + esc(p.desc) + '</small></span></label>';
     }).join("");
+    if (!opts.length) $("#halfOptions").innerHTML = '<p class="half-unavailable">Não há outro sabor disponível no momento.</p>';
+    $("[data-confirm-half]", modal).disabled = !opts.length;
+    modal.onchange = updateHalfTotal;
+    modal.onkeydown = function (ev) {
+      if (ev.key !== "Tab") return;
+      var controls = $all('button:not(:disabled), input:not(:disabled)', modal).filter(function (el) {
+        return el.type !== "radio" || el.checked || (!$("#halfOptions input:checked") && el === $("#halfOptions input"));
+      });
+      var first = controls[0], last = controls[controls.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    };
+    updateHalfTotal();
     var notes = $("#halfNotes");
     if (notes) notes.value = "";
     modal.classList.add("is-open");
     $("#cartScrim").classList.add("is-visible");
     lockScroll();
+    $("[data-close-half]", modal).focus();
   }
 
   function closeHalf() {
@@ -265,6 +295,7 @@
     if (modal && modal.classList.contains("is-open")) {
       modal.classList.remove("is-open");
       unlockScroll();
+      if (halfTrigger && halfTrigger.isConnected) halfTrigger.focus();
     }
     var sc = $("#cartScrim");
     if (sc && !($("#cartDrawer") || {}).classList?.contains("is-open") && !($("#checkoutModal") || {}).classList?.contains("is-open") && !($("#mobileNav") || {}).classList?.contains("is-open")) sc.classList.remove("is-visible");
@@ -273,15 +304,21 @@
   function confirmHalf() {
     var sel = $("#halfOptions input:checked");
     if (!sel) {
-      toast("Escolha a segunda metade.");
+      toast("Escolha a segunda metade.", false, "warning");
       var first = $("#halfOptions input");
       if (first) first.focus();
+      return;
+    }
+    var base = store.find(halfState.baseId);
+    var second = store.find(sel.value);
+    if (!base || base.paused || !second || second.paused || !store.isPizza(second.id) || second.id === base.id) {
+      toast("Esse sabor não está disponível. Escolha novamente.", false, "warning");
       return;
     }
     var notesEl = $("#halfNotes");
     var notes = notesEl ? notesEl.value.trim().slice(0, 80) : "";
     if (store.add(halfState.baseId, halfState.size, { halfId: sel.value, notes: notes })) {
-      toast("Meia-a-meia adicionada.");
+      toast("Meia-a-meia adicionada ao pedido!");
       closeHalf();
       renderCart();
       renderStickyBar();
