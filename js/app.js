@@ -130,14 +130,6 @@
     return product.price;
   }
 
-  function priceListHTML(product) {
-    if (!store.isPizza(product.id)) return "";
-    var parts = (TOSCANA.sizes || []).map(function (s) {
-      return s.code + " " + store.money(priceFor(product, s.code));
-    });
-    return '<p class="price-list">' + esc(parts.join(" · ")) + "</p>";
-  }
-
   function cardHTML(product, type) {
     var isPizza = type === "pizza";
     var pills = isPizza
@@ -147,30 +139,30 @@
           return '<button type="button" class="size-pill' + (i === 0 ? " is-active" : "") + '"' +
             ' data-size="' + esc(s.code) + '" aria-pressed="' + (i === 0 ? "true" : "false") + '"' +
             ' aria-label="' + esc(full) + '"' +
-            ' title="' + esc(full) + '">' + esc(s.code + " · " + s.detail) + "</button>";
+            ' title="' + esc(full) + '"><strong>' + esc(s.code) + '</strong><span>' + esc(s.detail) + "</span></button>";
         }).join("") + "</div>"
       : "";
-    var hint = isPizza ? "a partir de" : "unidade";
+    var firstSize = (TOSCANA.sizes || [])[0];
+    var hint = isPizza ? "tamanho " + (firstSize ? firstSize.code : "P") : "unidade";
     var halfBtn = isPizza
       ? '<button type="button" class="link-half" data-half="' + esc(product.id) + '">½ meia-a-meia</button>'
       : "";
     var catLabel = CATEGORY_LABEL[product.kind] || "";
     return (
-      '<article class="product-card" data-kind="' + esc(product.kind || "") + '" data-name="' + esc((product.name + " " + product.desc).toLowerCase()) + '">' +
+      '<article class="product-card' + (isPizza ? ' product-card--pizza' : '') + '" data-kind="' + esc(product.kind || "") + '" data-name="' + esc((product.name + " " + product.desc).toLowerCase()) + '">' +
         '<div class="product-body">' +
           '<div class="pc-head">' +
             "<h3>" + esc(product.name) + "</h3>" +
             (catLabel ? '<span class="cat-tag">' + esc(catLabel) + "</span>" : "") +
           "</div>" +
           '<p class="product-desc">' + esc(product.desc) + "</p>" +
-          priceListHTML(product) +
-          pills + halfBtn +
+          (isPizza ? '<div class="pizza-options">' + pills + '</div>' : '') +
           '<div class="product-foot">' +
             '<span class="product-price" data-price data-base="' + priceFor(product, "P") + '" data-id="' + esc(product.id) + '">' +
               store.money(priceFor(product, "P")) + "<small>" + hint + "</small>" +
             "</span>" +
             '<button type="button" class="add-btn" data-add="' + esc(product.id) + '" data-type="' + type + '" aria-label="Adicionar ' + esc(product.name) + ' ao pedido">' + I.plus + "Adicionar</button>" +
-          "</div>" +
+          "</div>" + halfBtn +
         "</div>" +
       "</article>"
     );
@@ -345,13 +337,16 @@
     renderStickyBar();
   }
 
+  var stickyBarDismissed = false;
+
   function renderStickyBar() {
     var bar = $("#stickyBar");
     if (!bar) return;
     var n = store.count();
-    document.body.classList.toggle("has-items", n > 0);
-    if (!n) { bar.classList.remove("is-visible"); return; }
-    bar.classList.add("is-visible");
+    if (!n) stickyBarDismissed = false;
+    document.body.classList.toggle("has-items", n > 0 && !stickyBarDismissed);
+    bar.classList.toggle("is-visible", n > 0 && !stickyBarDismissed);
+    if (!n) return;
     $("#stickyTotal").textContent = store.money(store.subtotal());
     $("#stickyCount").textContent = n + (n === 1 ? " item" : " itens");
   }
@@ -537,7 +532,56 @@
   }
 
   /* ---------------- eventos ---------------- */
+  function bindStickyBarDrag() {
+    var bar = $("#stickyBar");
+    if (!bar) return;
+    var gesture = null;
+    var suppressClick = false;
+
+    bar.addEventListener("pointerdown", function (ev) {
+      if (!ev.isPrimary || ev.button !== 0 || !bar.classList.contains("is-visible")) return;
+      suppressClick = false;
+      gesture = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, distance: 0, dragging: false };
+    });
+    bar.addEventListener("pointermove", function (ev) {
+      if (!gesture || gesture.id !== ev.pointerId) return;
+      var dy = ev.clientY - gesture.y;
+      if (!gesture.dragging) {
+        if (Math.abs(ev.clientX - gesture.x) > 10 && Math.abs(ev.clientX - gesture.x) > Math.abs(dy)) { gesture = null; return; }
+        if (dy < 8) return;
+        gesture.dragging = true;
+        bar.setPointerCapture(ev.pointerId);
+        bar.classList.add("is-dragging");
+      }
+      gesture.distance = Math.max(0, dy);
+      bar.style.transform = "translate(-50%, " + gesture.distance + "px)";
+    });
+    function finish(ev) {
+      if (!gesture || gesture.id !== ev.pointerId) return;
+      var dismissed = ev.type === "pointerup" && gesture.distance >= 48;
+      suppressClick = gesture.dragging;
+      gesture = null;
+      bar.classList.remove("is-dragging");
+      if (dismissed) {
+        stickyBarDismissed = true;
+        renderStickyBar();
+      }
+      bar.style.removeProperty("transform");
+      if (bar.hasPointerCapture(ev.pointerId)) bar.releasePointerCapture(ev.pointerId);
+    }
+    bar.addEventListener("pointerup", finish);
+    bar.addEventListener("pointercancel", finish);
+    bar.addEventListener("lostpointercapture", finish);
+    bar.addEventListener("click", function (ev) {
+      if (!suppressClick) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      suppressClick = false;
+    }, true);
+  }
+
   function bind() {
+    bindStickyBarDrag();
     document.addEventListener("click", function (ev) {
       var t = ev.target;
 

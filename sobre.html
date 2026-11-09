@@ -54,7 +54,7 @@
       <a href="/sobre" class="is-active">Sobre</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn--wine btn--sm" data-bind="wa" href="#"><svg><use href="#i-chat"/></svg>Pedir agora</a>
+      <a class="btn btn--wine btn--sm" href="/#cardapio"><svg><use href="#i-bag"/></svg>Montar meu pedido</a>
       <button class="bag-btn" type="button" data-open-cart aria-label="Abrir pedido"><svg><use href="#i-bag"/></svg><span class="bag-count" data-cart-count style="display:none">0</span></button>
       <button class="nav-toggle" type="button" id="mobileOpen" aria-label="Abrir menu"><svg><use href="#i-menu"/></svg></button>
     </div>
@@ -68,7 +68,7 @@
   <a class="mobile-link" href="/esfirras">Esfirras</a>
   <a class="mobile-link" href="/bebidas">Bebidas</a>
   <a class="mobile-link" href="/sobre">Sobre</a>
-  <a class="btn btn--wine btn--block" data-bind="wa" href="#">Pedir no WhatsApp</a>
+  <a class="btn btn--wine btn--block" data-bind="wa" href="#">Ajuda no WhatsApp</a>
 </nav>
 
 <main>
@@ -131,7 +131,7 @@
   <div class="cta-band">
     <div class="container">
       <div><h2>Prove a <em>tradição.</em></h2><p><span data-bind="address">Cambé/PR</span> · <span data-bind="hours">Terça a domingo · 18h às 23h30</span> · Somente entrega</p></div>
-      <a data-bind="wa" href="#" class="btn btn--gold"><svg><use href="#i-chat"/></svg>Pedir no WhatsApp</a>
+      <a data-bind="wa" href="#" class="btn btn--gold"><svg><use href="#i-chat"/></svg>Ajuda no WhatsApp</a>
     </div>
   </div>
 </main>
@@ -181,7 +181,7 @@
   </div>
 </div>
 
-<div class="modal" id="halfModal" role="dialog" aria-modal="true" aria-label="Montar meia-a-meia"><div class="modal-card"><div class="modal-head"><h3 id="halfTitle">Montar meia-a-meia</h3><p id="halfFee"></p></div><div class="modal-body"><div class="half-list" id="halfOptions"></div><div class="field"><label for="halfNotes">Observacao da pizza (opcional)</label><input id="halfNotes" maxlength="80" inputmode="text" enterkeyhint="done" placeholder="Ex: bem assada, sem cebola"></div><button type="button" class="btn btn--wine btn--block" data-confirm-half>Adicionar meia-a-meia</button><button type="button" class="btn btn--ghost btn--block" data-close-half>Cancelar</button></div></div></div><div class="modal" id="successModal" role="dialog" aria-modal="true" aria-label="Pedido enviado"><div class="modal-card"><div class="modal-head"><h3>Pedido enviado!</h3><p>Ja abrimos o WhatsApp para voce confirmar</p></div><div class="modal-body"><div class="success-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div><p id="successText"></p><button type="button" class="btn btn--green btn--block" data-close-success>Voltar ao cardapio</button><button type="button" class="btn btn--ghost btn--block" id="btnReorder" style="display:none">Pedir o ultimo pedido de novo</button></div></div></div><div class="sticky-bar" id="stickyBar" role="status"><div><strong id="stickyTotal">R$ 0,00</strong><br><span id="stickyCount"></span></div><button class="btn btn--gold btn--sm" type="button" data-open-cart>Abrir pedido</button></div>
+<div class="modal" id="halfModal" role="dialog" aria-modal="true" aria-label="Montar meia-a-meia"><div class="modal-card"><div class="modal-head"><h3 id="halfTitle">Montar meia-a-meia</h3><p id="halfFee"></p></div><div class="modal-body"><div class="half-list" id="halfOptions"></div><div class="field"><label for="halfNotes">Observacao da pizza (opcional)</label><input id="halfNotes" maxlength="80" inputmode="text" enterkeyhint="done" placeholder="Ex: bem assada, sem cebola"></div><button type="button" class="btn btn--wine btn--block" data-confirm-half>Adicionar meia-a-meia</button><button type="button" class="btn btn--ghost btn--block" data-close-half>Cancelar</button></div></div></div><div class="modal" id="successModal" role="dialog" aria-modal="true" aria-label="Pedido enviado"><div class="modal-card"><div class="modal-head"><h3>Pedido enviado!</h3><p>Ja abrimos o WhatsApp para voce confirmar</p></div><div class="modal-body"><div class="success-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div><p id="successText"></p><button type="button" class="btn btn--green btn--block" data-close-success>Voltar ao cardapio</button><button type="button" class="btn btn--ghost btn--block" id="btnReorder" style="display:none">Pedir o ultimo pedido de novo</button></div></div></div><div class="sticky-bar" id="stickyBar" role="status"><div><strong id="stickyTotal">R$ 0,00</strong><br><span id="stickyCount"></span></div><button class="btn btn--gold btn--sm" type="button" data-open-cart>Ver pedido</button></div>
 
 <div class="toast" id="toast" role="status"></div>
 <a class="float-wa" data-bind="wa" href="#" aria-label="Conversar no WhatsApp"><svg><use href="#i-chat"/></svg></a>
@@ -190,5 +190,6 @@
 <script src="/js/data.js"></script>
 <script src="/js/store.js"></script>
 <script src="/js/app.js"></script>
+<nav class="bottom-nav" aria-label="Navegação no celular"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg><span>Início</span></a><a href="/pizzas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 9 3a26 26 0 0 1 12 12Z"/><path d="M8 6a23 23 0 0 1 10 10"/><circle cx="11" cy="11" r="1.2"/><circle cx="9" cy="16" r="1.2"/><circle cx="14" cy="15" r=".8"/></svg><span>Pizzas</span></a><a href="/esfirras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="8"/><ellipse cx="12" cy="12" rx="6" ry="5"/><path d="m9 10 2 1m3-2 1 2m-6 3 2-1m2 2 2-1"/></svg><span>Esfirras</span></a><a href="/bebidas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v4l-3 4v9a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-9l-3-4V3M7 12h10M7 17h10"/></svg><span>Bebidas</span></a><button type="button" data-open-cart><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l1 12H4Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/><path d="m9 15 2 2 4-4"/></svg><span>Meu pedido</span><span class="bottom-nav-count" data-cart-count style="display:none">0</span></button></nav>
 </body>
 </html>
