@@ -305,12 +305,18 @@
 
     var box = $("#cartItems");
     if (!box) return;
+    var drawer = $("#cartDrawer");
+    if (drawer) {
+      drawer.classList.toggle("is-empty", !items.length);
+      var subtitle = $(".drawer-head p", drawer);
+      if (subtitle) subtitle.textContent = totalQty ? totalQty + (totalQty === 1 ? " item no seu pedido" : " itens no seu pedido") : "Seu próximo sabor favorito está aqui";
+    }
 
     if (!items.length) {
       box.innerHTML =
-        '<div class="cart-empty">' + I.bag +
-        "<p><strong>Seu carrinho está vazio.</strong><br>Que tal começar por uma das mais pedidas?</p>" +
-        '<a class="btn btn--wine btn--sm" href="/pizzas">Ver cardápio</a></div>';
+        '<div class="cart-empty"><div class="cart-empty-icon">' + I.bag + '</div>' +
+        "<h4>Seu pedido começa aqui</h4><p>Escolha suas favoritas no cardápio.<br>A gente cuida do resto.</p>" +
+        '<a class="btn btn--wine" href="/index.html#cardapio" data-close-cart>Ver cardápio</a></div>';
     } else {
       box.innerHTML = items.map(function (it, idx) {
         var p = store.find(it.id);
@@ -323,14 +329,14 @@
                               : "Esfirra · unidade — " + store.money(unit));
         return (
           '<div class="cart-item">' +
-            "<div><h4>" + esc(p.name) + (it.halfId && store.find(it.halfId) ? " / " + esc(store.find(it.halfId).name) : "") + "</h4>" +
+            '<div class="cart-item-info"><span class="cart-item-category">' + (cat === "pizza" ? "Pizza" : cat === "bebida" ? "Bebida" : "Esfirra") + '</span><h4>' + esc(p.name) + (it.halfId && store.find(it.halfId) ? " / " + esc(store.find(it.halfId).name) : "") + "</h4>" +
               '<p class="meta">' + meta + "</p>" +
-              '<div class="qty">' +
+              '<div class="cart-item-actions"><div class="qty">' +
                 '<button type="button" data-dec="' + idx + '" aria-label="Diminuir quantidade">' + I.minus + "</button>" +
                 "<strong>" + it.qty + "</strong>" +
                 '<button type="button" data-inc="' + idx + '" aria-label="Aumentar quantidade">' + I.plus + "</button>" +
               "</div>" +
-              '<button type="button" class="link-danger" data-del="' + idx + '">remover</button>' +
+              '<button type="button" class="link-danger" data-del="' + idx + '">Remover</button></div>' +
             "</div>" +
             '<span class="line-total">' + store.money(unit * it.qty) + "</span>" +
           "</div>"

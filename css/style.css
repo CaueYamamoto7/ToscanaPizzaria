@@ -682,6 +682,52 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   .menu-categories a { padding: 20px; }
 }
 
+/* Carrinho: painel de pedido */
+.cart-drawer { width: min(480px, 100%); border-left: 0; background: #f8f5f0; box-shadow: -16px 0 80px #17090c33; }
+.cart-drawer .drawer-head { flex-shrink: 0; padding: 28px 26px 24px; background: var(--wine-900); border-bottom: 0; gap: 16px; }
+.cart-drawer .drawer-head h3 { font-size: 1.8rem; letter-spacing: -0.03em; line-height: 1.2; }
+.cart-drawer .drawer-head p { margin-top: 7px; font-size: 0.82rem; color: var(--gold-100); }
+.cart-drawer .icon-btn { flex-shrink: 0; background: #ffffff0d; border-color: #ffffff26; }
+.cart-drawer .drawer-items { min-height: 0; padding: 24px; gap: 14px; overscroll-behavior: contain; }
+.cart-drawer .cart-item { padding: 20px; gap: 12px; align-items: start; border: 1px solid #e9e1d8; border-radius: 16px; background: #fff; box-shadow: 0 3px 12px #36151a04; }
+.cart-item-info { min-width: 0; }
+.cart-item-category { display: block; margin-bottom: 7px; color: var(--faint); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; }
+.cart-drawer .cart-item h4 { font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
+.cart-drawer .cart-item .meta { margin-top: 7px; font-size: 0.77rem; line-height: 1.6; }
+.cart-item-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin-top: 16px; }
+.cart-drawer .qty { margin: 0; gap: 2px; padding: 3px; border: 1px solid #e9e1d8; border-radius: 12px; background: #faf8f5; }
+.cart-drawer .qty button { width: 38px; height: 38px; border: 0; border-radius: 8px; background: transparent; }
+.cart-drawer .qty button:hover { background: #eee6df; }
+.cart-drawer .qty strong { min-width: 27px; font-size: 0.9rem; }
+.cart-drawer .link-danger { margin: 0; padding: 10px 0; color: var(--muted); font-size: 0.74rem; font-weight: 500; }
+.cart-drawer .link-danger:hover { color: var(--danger); }
+.cart-drawer .line-total { padding-top: 24px; font-family: var(--font-body); font-size: 0.95rem; white-space: nowrap; }
+.cart-drawer .drawer-foot { flex-shrink: 0; padding: 22px 26px calc(24px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #e9e1d8; background: #fff; box-shadow: 0 -8px 28px #36151a05; }
+.cart-drawer .total-line { margin-bottom: 20px; gap: 12px; }
+.cart-drawer .total-line span:first-child { font-size: 0.86rem; color: var(--muted); font-weight: 500; }
+.cart-drawer .total-line strong { font-size: 2rem; letter-spacing: -0.04em; }
+.cart-drawer #btnCheckout { min-height: 54px; border-radius: 12px; font-size: 0.9rem; }
+.cart-drawer .foot-note { font-size: 0.72rem; line-height: 1.6; margin-top: 12px; }
+.cart-drawer.is-empty .drawer-foot { display: none; }
+.cart-drawer.is-empty .drawer-items { justify-content: center; }
+.cart-drawer .cart-empty { padding: 32px 0 56px; }
+.cart-empty-icon { display: grid; place-items: center; width: 100px; height: 100px; margin: 0 auto 26px; border-radius: 50%; background: #eee6df; }
+.cart-drawer .cart-empty-icon svg { width: 42px; height: 42px; margin: 0; color: var(--wine-700); }
+.cart-empty h4 { font-family: var(--font-display); color: var(--wine-900); font-size: 1.65rem; line-height: 1.25; }
+.cart-empty p { margin: 14px 0 26px; font-size: 0.9rem; line-height: 1.8; }
+.cart-empty .btn { min-width: 200px; min-height: 52px; border-radius: 12px; }
+.cart-drawer :is(button, a):focus-visible { outline: 3px solid var(--gold-500); outline-offset: 3px; }
+@media (max-width: 480px) {
+  .cart-drawer .drawer-head { padding: 24px 20px; }
+  .cart-drawer .drawer-items { padding: 18px 16px; }
+  .cart-drawer .cart-item { padding: 16px; gap: 8px; }
+  .cart-drawer .drawer-foot { padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .cart-drawer .line-total { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-drawer { transition: none; }
+}
+
 /* On mobile, the topbar and bottom navigation replace the brand header. */
 @media (max-width: 680px) {
   .site-header { display: none; }
