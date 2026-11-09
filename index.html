@@ -234,25 +234,23 @@
   <div class="drawer-items" id="cartItems"></div>
   <div class="drawer-foot">
     <div class="total-line"><span>Total do pedido</span><strong id="cartTotal">R$ 0,00</strong></div>
-    <button class="btn btn--green btn--block" id="btnCheckout" type="button" data-open-checkout><svg><use href="#i-check"/></svg>Finalizar no WhatsApp</button>
-    <p class="foot-note">Taxa de entrega e pagamento combinadas no WhatsApp.</p>
+    <button class="btn btn--green btn--block" id="btnCheckout" type="button" data-open-checkout><svg><use href="#i-check"/></svg>Continuar para entrega</button>
+    <p class="foot-note">Taxa de entrega a combinar pelo WhatsApp.</p>
   </div>
 </aside>
 
 <!-- Checkout -->
 <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-label="Finalizar pedido">
   <div class="modal-card">
-    <div class="modal-head"><h3>Finalizar pedido</h3><p>Resumo · Total <strong id="checkoutTotal">R$ 0,00</strong></p></div>
+    <div class="modal-head checkout-head"><div><span class="checkout-eyebrow">Falta pouco para saborear</span><h3 id="checkoutTitle">Finalize seu pedido</h3><p>Seus dados para combinar a entrega.</p></div><button class="icon-btn" type="button" data-close-checkout aria-label="Fechar finalização"><svg><use href="#i-x"/></svg></button></div>
     <form class="modal-body" id="checkoutForm" novalidate>
-      <div class="order-resume" id="orderResume"></div>
+      <section class="checkout-summary" aria-label="Resumo do pedido"><h4>Seu pedido</h4><div class="order-resume" id="orderResume"></div></section><div class="checkout-section-title">Contato e entrega</div>
       <div class="field"><label for="fName">Nome <i>*</i></label><input id="fName" name="name" autocomplete="name" autocapitalize="words" enterkeyhint="next" aria-describedby="fName-err" placeholder="Seu nome"><span class="field-error" id="fName-err">Informe seu nome.</span></div>
       <div class="field"><label for="fPhone">Telefone / WhatsApp <i>*</i></label><input id="fPhone" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" aria-describedby="fPhone-err" placeholder="(43) 99999-9999"><span class="field-error" id="fPhone-err">Informe um telefone valido com DDD.</span></div>
       <div class="field"><label for="fAddress">Rua e número <i>*</i></label><input id="fAddress" name="address" autocomplete="street-address" enterkeyhint="next" aria-describedby="fAddress-err" placeholder="Rua, número"><span class="field-error" id="fAddress-err">Informe rua e número.</span></div>
-      <div class="field"><label for="fDistrict">Bairro <i>*</i></label><select id="fDistrict" name="district"><option value="">Selecione o bairro...</option></select><span class="field-error" id="fDistrict-err">Selecione o bairro para calcular a entrega.</span></div>
-      <div class="fee-preview" id="feePreview" role="status"></div>
       <div class="field-2col"><div class="field"><label for="fPayment">Pagamento <i>*</i></label><select id="fPayment"><option value="">Selecione...</option><option>Pix</option><option>Cartão na entrega</option><option>Dinheiro</option></select><span class="field-error" id="fPayment-err">Selecione a forma de pagamento.</span></div><div class="field" id="fChangeWrap"><label for="fChange">Troco para (se dinheiro)</label><input id="fChange" inputmode="decimal" placeholder="Ex: 100"></div></div>
       <div class="field"><label for="fNotes">Complemento / observações</label><input id="fNotes" name="notes" autocomplete="off" enterkeyhint="done" placeholder="Apto, ponto de referência..."></div>
-      <div class="modal-foot"><button type="submit" class="btn btn--green btn--block"><svg><use href="#i-chat"/></svg>Enviar pedido no WhatsApp</button>
+      <div class="modal-foot checkout-foot"><div class="checkout-subtotal"><span>Total dos produtos</span><strong id="checkoutTotal">R$ 0,00</strong></div><p class="checkout-delivery-note">A taxa de entrega será combinada pelo WhatsApp e somada ao valor dos produtos.</p><button type="submit" class="btn btn--green btn--block"><svg><use href="#i-chat"/></svg>Enviar pedido no WhatsApp</button>
       <button type="button" class="btn btn--ghost btn--block" data-close-checkout>Voltar ao pedido</button></div>
     </form>
   </div>

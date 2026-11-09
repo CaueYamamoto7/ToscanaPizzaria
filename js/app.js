@@ -117,7 +117,6 @@
     var opener = $("#mobileOpen");
     if (opener) { opener.setAttribute("aria-expanded", "false"); opener.setAttribute("aria-controls", "mobileNav"); }
     renderOpenBadge();
-    fillDistrictOptions();
     fillProfile();
     renderReorderBtn();
   }
@@ -326,10 +325,6 @@
   }
 
   /* ---------------- carrinho ---------------- */
-  function districtOfCheckout() {
-    var sel = document.getElementById("fDistrict");
-    return sel ? sel.value : "";
-  }
 
   function renderCart() {
     var items = store.items();
@@ -432,44 +427,27 @@
   }
 
   /* ---------------- checkout ---------------- */
-  function fillDistrictOptions() {
-    var sel = document.getElementById("fDistrict");
-    if (!sel || sel.options.length > 1) return;
-    var fees = TOSCANA.fees || { districts: [] };
-    sel.innerHTML = '<option value="">Selecione o bairro…</option>' + (fees.districts || []).map(function (d) {
-      return '<option value="' + esc(d.name) + '">' + esc(d.name) + " — entrega " + store.money(d.fee) + "</option>";
-    }).join("");
-  }
 
   function fillProfile() {
     var p = store.loadProfile() || {};
     var set = function (id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
     set("fName", p.name); set("fPhone", p.phone);
-    set("fAddress", p.address); set("fDistrict", p.district);
+    set("fAddress", p.address);
     set("fPayment", p.payment); set("fChange", p.changeFor); set("fNotes", p.notes);
-    updateFeePreview();
   }
 
-  function updateFeePreview() {
-    var prev = $("#feePreview");
-    if (!prev) return;
-    var d = districtOfCheckout();
-    if (!d) { prev.textContent = ""; return; }
-    var list = (TOSCANA.fees.districts || []);
-    var found = list.filter(function (x) { return x.name === d; })[0];
-    var fee = store.feeFor(d);
-    var sub = store.subtotal();
-    prev.textContent = "Entrega " + store.money(fee) + (found && found.eta ? " · " + found.eta : "") + " · Total " + store.money(sub + fee);
-  }
 
   function openCheckout() {
-    if (!store.items().length) { toast("Adicione um item antes de finalizar."); return; }
+    if (!store.items().length) { toast("Escolha um item para começar seu pedido.", false, "warning"); return; }
     closeCart();
     refreshResume();
+    var changeWrap = $("#fChangeWrap");
+    if (changeWrap) changeWrap.style.display = fieldValue("fPayment") === "Dinheiro" ? "" : "none";
     $("#checkoutModal").classList.add("is-open");
     $("#cartScrim").classList.add("is-visible");
     lockScroll();
     document.body.classList.add("cart-open");
+    $("[data-close-checkout]", $("#checkoutModal")).focus();
   }
 
   function refreshResume() {
@@ -477,15 +455,13 @@
       var extra = it.notes ? " (" + it.notes + ")" : "";
       return it.qty + "x " + store.lineLabel(it) + extra + " — " + store.money(store.unitPrice(it) * it.qty);
     });
-    var d = districtOfCheckout();
-    var fee = d ? store.feeFor(d) : 0;
     var sub = store.subtotal();
-    var txt = lines.join("\n") + "\n\nSubtotal: " + store.money(sub) +
-      (d ? "\nEntrega (" + d + "): " + store.money(fee) + "\nTOTAL: " + store.money(sub + fee) : "\nTOTAL: " + store.money(sub) + " (+ entrega)");
+    var txt = lines.join("\n") + "\n\nTotal dos produtos: " + store.money(sub) +
+      "\nTaxa de entrega a combinar pelo WhatsApp.";
     var r = $("#orderResume");
     if (r) r.textContent = txt;
     var t = $("#checkoutTotal");
-    if (t) t.textContent = store.money(sub + fee);
+    if (t) t.textContent = store.money(sub);
   }
 
   function closeCheckout() {
@@ -530,19 +506,18 @@
     ok = requireField("fName") && ok;
     ok = requireField("fPhone", function (v) { return v.replace(/\D/g, "").length >= 10; }) && ok;
     ok = requireField("fAddress") && ok;
-    ok = requireField("fDistrict") && ok;
     var pay = fieldValue("fPayment");
     if (document.getElementById("fPayment")) ok = requireField("fPayment") && ok;
     if (pay === "Dinheiro") {
       // troco opcional, mas se preenchido precisa ser válido
       var ch = fieldValue("fChange");
       if (ch && !/^(\d+([.,]\d{1,2})?)$/.test(ch.replace("R$", "").trim())) {
-        toast("Troco inválido. Ex: 100 ou 50,00.");
+        toast("Confira o troco. Use, por exemplo, 100 ou 50,00.", false, "warning");
         return;
       }
     }
     if (!ok) {
-      toast("Preencha nome, telefone, endereço, bairro e pagamento.");
+      toast("Complete seus dados de contato, entrega e pagamento.", false, "warning");
       var firstBad = document.querySelector("#checkoutForm .is-invalid");
       if (firstBad) {
         firstBad.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -555,14 +530,13 @@
       name: fieldValue("fName"),
       phone: fieldValue("fPhone"),
       address: fieldValue("fAddress"),
-      district: fieldValue("fDistrict"),
       payment: pay || "",
-      changeFor: fieldValue("fChange"),
+      changeFor: pay === "Dinheiro" ? fieldValue("fChange") : "",
       notes: fieldValue("fNotes"),
       orderId: "T-" + Date.now().toString().slice(-6)
     };
-    store.saveProfile({ name: customer.name, phone: customer.phone, address: customer.address, district: customer.district, payment: customer.payment, changeFor: customer.changeFor, notes: customer.notes });
-    store.saveLast({ items: store.items(), customer: { name: customer.name, district: customer.district }, at: Date.now() });
+    store.saveProfile({ name: customer.name, phone: customer.phone, address: customer.address, payment: customer.payment, changeFor: customer.changeFor, notes: customer.notes });
+    store.saveLast({ items: store.items(), customer: { name: customer.name }, at: Date.now() });
     window.open(store.checkoutUrl(customer), "_blank", "noopener");
     showSuccess(customer);
   }
@@ -573,14 +547,12 @@
     renderCart();
     renderReorderBtn();
     var m = $("#successModal");
-    if (!m) { toast("Abrindo o WhatsApp com seu pedido..."); return; }
-    var d = customer.district;
-    var fee = d ? store.feeFor(d) : 0;
-    $("#successText").textContent = "Pedido " + customer.orderId + " pronto para enviar no WhatsApp. " + customer.name + ", entrega em " + (customer.address + " — " + d) + " (" + store.money(fee) + ").";
+    if (!m) { toast("Abrindo o WhatsApp com seu pedido...", false, "info"); return; }
+    $("#successText").textContent = "Pedido " + customer.orderId + " pronto para enviar no WhatsApp. " + customer.name + ", confira a entrega em " + customer.address + ". A taxa de entrega será combinada pelo WhatsApp.";
     m.classList.add("is-open");
     $("#cartScrim").classList.add("is-visible");
     lockScroll();
-    toast("Abrindo o WhatsApp com seu pedido...");
+    toast("Abrindo o WhatsApp com seu pedido...", false, "info");
   }
 
   /* ---------------- eventos ---------------- */
@@ -784,21 +756,19 @@
     var form = $("#checkoutForm");
     if (form) {
       form.addEventListener("submit", submitCheckout);
-      ["fName", "fPhone", "fAddress", "fDistrict", "fPayment", "fChange"].forEach(function (id) {
+      ["fName", "fPhone", "fAddress", "fPayment", "fChange"].forEach(function (id) {
         var el = document.getElementById(id);
         if (!el) return;
         el.addEventListener("input", function () {
           el.classList.remove("is-invalid");
           var err = document.getElementById(id + "-err");
           if (err) err.classList.remove("is-visible");
-          if (id === "fDistrict") { updateFeePreview(); refreshResume(); }
           if (id === "fPayment") {
             var ch = document.getElementById("fChangeWrap");
             if (ch) ch.style.display = (el.value === "Dinheiro") ? "" : "none";
           }
         });
         el.addEventListener("change", function () {
-          if (id === "fDistrict") { updateFeePreview(); refreshResume(); }
           if (id === "fPayment") {
             var ch2 = document.getElementById("fChangeWrap");
             if (ch2) ch2.style.display = (el.value === "Dinheiro") ? "" : "none";
@@ -872,6 +842,5 @@
     renderMenus();
     bind();
     renderCart();
-    updateFeePreview();
   });
 })();

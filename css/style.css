@@ -492,20 +492,6 @@ body.cart-open .float-wa, body.cart-open .sticky-bar { display: none; }
 .size-pill { min-height: 44px; }
 .success-check { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #fff; margin-bottom: 12px; }
 .success-check svg { width: 28px; height: 28px; }
-.sticky-bar { position: fixed; left: 50%; transform: translate(-50%, 90px); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 85; display: flex; align-items: center; gap: 14px; background: var(--wine-900); color: #fff; border: 1px solid var(--gold-500); border-radius: 999px; padding: 10px 10px 10px 20px; box-shadow: var(--shadow-lg); opacity: 0; transition: transform .25s ease, opacity .25s ease; max-width: calc(100% - 24px); width: max-content; }
-.sticky-bar.is-visible { transform: translate(-50%, 0); opacity: 1; }
-.sticky-bar { touch-action: pan-x; user-select: none; visibility: hidden; pointer-events: none; transition: transform .25s ease, opacity .25s ease, visibility .25s; }
-.sticky-bar.is-visible { visibility: visible; pointer-events: auto; }
-.sticky-bar:not(.is-visible) { transform: translate(-50%, calc(100% + 200px)); }
-.sticky-bar.is-dragging { transition: none; cursor: grabbing; }
-.sticky-bar strong { font-family: var(--font-display); font-size: 1.1rem; }
-.sticky-bar span { font-size: 0.82rem; color: var(--gold-100); }
-body.cart-open .float-wa, body.cart-open .sticky-bar { display: none; }
-.qty button { width: 44px; height: 44px; }
-.size-row { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
-.size-pill { min-height: 44px; }
-.success-check { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #fff; margin-bottom: 12px; }
-.success-check svg { width: 28px; height: 28px; }
 
 /* ---------- 16. Responsivo ---------- */
 @media (max-width: 1020px) {
@@ -680,6 +666,36 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   body.cart-open .bottom-nav { display: none; }
   .menu-categories { grid-template-columns: 1fr; gap: 12px; }
   .menu-categories a { padding: 20px; }
+}
+
+/* Finalização do pedido */
+#checkoutModal { padding: 18px; }
+#checkoutModal .modal-card { width: min(620px, 100%); border-color: #e9e1d8; border-radius: 24px; background: #f8f5f0; }
+#checkoutModal .checkout-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 26px; background: var(--wine-900); border: 0; }
+.checkout-eyebrow { display: block; color: var(--gold-100); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+#checkoutModal h3 { font-size: 1.8rem; line-height: 1.2; }
+#checkoutModal .checkout-head p { margin-top: 8px; font-size: 0.83rem; }
+.checkout-head .icon-btn { flex-shrink: 0; }
+#checkoutForm { padding: 24px 26px; }
+.checkout-summary { background: #fff; border: 1px solid #e9e1d8; border-radius: 16px; padding: 18px; margin-bottom: 24px; }
+.checkout-summary h4, .checkout-section-title { font-family: var(--font-body); font-size: 0.95rem; font-weight: 700; color: var(--wine-900); }
+#checkoutModal .order-resume { margin: 12px 0 0; padding: 0; border: 0; background: transparent; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-body); font-size: 0.82rem; line-height: 1.8; color: var(--muted); max-height: none; }
+.checkout-section-title { margin-bottom: 18px; }
+#checkoutForm .field { margin-bottom: 18px; min-width: 0; }
+#checkoutForm .field input, #checkoutForm .field select { background: #fff; border-color: #dfd7ce; }
+#checkoutForm .field label { font-size: 0.8rem; }
+#checkoutForm .checkout-foot { padding: 22px 0 0; margin-top: 4px; border-top: 1px solid #e2d9ce; }
+.checkout-subtotal { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.checkout-subtotal span { color: var(--muted); font-size: 0.85rem; }
+.checkout-subtotal strong { font-family: var(--font-display); font-size: 1.9rem; color: var(--wine-900); }
+.checkout-delivery-note { border: 1px solid #e2d4c5; border-radius: 10px; padding: 12px; margin: 12px 0 18px; background: #f0e9e0; font-size: 0.78rem; line-height: 1.6; color: var(--wine-800); }
+#checkoutForm .checkout-foot .btn { border-radius: 12px; min-height: 50px; font-size: 0.85rem; }
+@media (max-width: 600px) {
+  #checkoutModal { padding: 10px; }
+  #checkoutModal .modal-card { border-radius: 18px; max-height: calc(100dvh - 20px); }
+  #checkoutModal .checkout-head, #checkoutForm { padding: 20px; }
+  #checkoutModal h3 { font-size: 1.5rem; }
+  #checkoutForm .field-2col { grid-template-columns: 1fr; gap: 0; }
 }
 
 /* Montagem de pizza meia a meia */

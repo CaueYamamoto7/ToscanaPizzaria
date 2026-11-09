@@ -278,20 +278,17 @@ TOSCANA.store = (function () {
       var extra = it.notes ? " (" + it.notes + ")" : "";
       return it.qty + "x " + lineLabel(it) + extra + " — " + money(unitPrice(it) * it.qty);
     });
-    var fee = customer.district ? feeFor(customer.district) : 0;
     var parts = [
       "NOVO PEDIDO — PIZZARIA TOSCANA",
       "--------------------------------",
       lines.join("\n"),
       "--------------------------------",
-      "Subtotal: " + money(subtotal()),
-      "Entrega (" + (customer.district || "a combinar") + "): " + money(fee),
-      "TOTAL: " + money(round2(subtotal() + fee)),
+      "Total dos produtos: " + money(subtotal()),
+      "Taxa de entrega: a combinar pelo WhatsApp.",
       "--------------------------------",
       "Nome: " + customer.name,
       "Tel: " + (customer.phone || "-"),
-      "Endereço: " + customer.address,
-      "Bairro: " + customer.district
+      "Endereço: " + customer.address
     ];
     if (customer.payment) parts.push("Pagamento: " + customer.payment + (customer.changeFor ? " (troco p/ " + customer.changeFor + ")" : ""));
     if (customer.notes) parts.push("Observações: " + customer.notes);
