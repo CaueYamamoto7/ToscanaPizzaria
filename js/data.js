@@ -35,7 +35,7 @@ TOSCANA.config = {
   reviewsUrl: "https://www.google.com/maps/search/Pizzaria+Toscana+Cambé+PR",
   promoFreeAbove: 0, // ex: 99 para "frete grátis acima de R$99". 0 = desativado.
   // Taxa extra ao montar meia-a-meia (montagem). 0 = sem taxa.
-  halfFee: 5.00
+  halfFee: 2.00
 };
 
 /* Taxa de entrega por bairro (sem backend: tabela editável).
